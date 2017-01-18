@@ -1,7 +1,7 @@
-# Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
+﻿# Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Игорь Брюховецкий](https://up.htmlacademy.ru/javascript/8/user/248432).
-* Наставник: `Неизвестно`.
+* Наставник: [Марина Милитенко]( https://htmlacademy.ru/profile/id227898).
 
 ---
 
@@ -18,3 +18,4 @@ _`bin`, `tests`, `.editorconfig`, `.eslintignore`, `.eslintrc`, `.gitignore`, `.
 [travis-url]: https://travis-ci.org/htmlacademy-javascript/248432-kekstagram
 [dependency-image]: https://david-dm.org/htmlacademy-javascript/248432-kekstagram.svg?style=flat-square
 [dependency-url]: https://david-dm.org/htmlacademy-javascript/248432-kekstagram
+
