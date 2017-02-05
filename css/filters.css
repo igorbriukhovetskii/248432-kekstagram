@@ -1,0 +1,11 @@
+.upload-filter-label-phobos .upload-filter-preview,
+.filter-phobos {
+  -webkit-filter: hue-rotate(270deg);
+  filter: hue-rotate(270deg);
+}
+
+.upload-filter-label-heat .upload-filter-preview,
+.filter-heat {
+  -webkit-filter: saturate(300%);
+  filter: saturate(300%);
+}
