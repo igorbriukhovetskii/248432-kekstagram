@@ -97,7 +97,6 @@ uploadFormInput.addEventListener('change', function () {
 });
 //  Подключение обработчика событий к кнопке закрытия формы кадрирования изображения
 uploadCancel.addEventListener('click', function () {
-  console.log('X clicked');
   toggleUploadOverlay(hiddenElementClass, OVERLAY_IS_HIDDEN);
 });
 //  Подключение обработчика клика к блоку контроля фильтров изображения
