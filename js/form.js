@@ -7,6 +7,8 @@ var uploadFormInput = uploadForm.querySelector('#upload-file');
 var uploadOverlay = document.querySelector('.upload-overlay');
 //  Кнопка закрытия блока с формой кадрирования изображения
 var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
+//  Блок фильтров изображения
+var filterControls = uploadOverlay.querySelector('.upload-filter-controls');
 //  Переключатели фильтров изображения
 var filterToggle = uploadOverlay.querySelectorAll('input[name = "upload-filter"]');
 //  Предпросмотр изображения
@@ -37,14 +39,40 @@ var hiddenElementClass = 'invisible';
 var PERCENT = 100;
 //  Основание десятичной  системы счисления
 var DECIMAL_BASE = 10;
+//  Код клавиши ESCAPE
+var ESCAPE_KEY_CODE = 27;
+var ENTER_KEY_CODE = 13;
 
+//  Флаги, определяющие видимость блока с формой кадрирования
+var OVERLAY_IS_VISIBLE = true;
+var OVERLAY_IS_HIDDEN = false;
+
+function isKeyPressed(event, key) {
+  return event.keyCode && event.keyCode === key;
+}
 /**
  * Функция, показывающая/скрывающая форму кадрирования изображения
  * @param {string} className - класс для сокрытия блока
+ * @param {boolean} overlayVisibility - статус видимости формы кадрирования после срабатывания функции
  */
-function toggleUploadOverlay(className) {
-  uploadForm.classList.toggle(className);
-  uploadOverlay.classList.toggle(className);
+function toggleUploadOverlay(className, overlayVisibility) {
+  if (overlayVisibility) {
+    uploadForm.classList.toggle(className, true);
+    uploadOverlay.classList.toggle(className, false);
+    uploadCancel.setAttribute('aria-pressed', 'false');
+    document.addEventListener('keydown', closeUploadOverlayOnEscape);
+  } else {
+    uploadForm.classList.toggle(className, false);
+    uploadOverlay.classList.toggle(className, true);
+    uploadCancel.setAttribute('aria-pressed', 'true');
+    document.removeEventListener('keydown', closeUploadOverlayOnEscape);
+  }
+}
+//  Функция, скрывающая форму кадрирования при нажатии клавиши ESCAPE
+function closeUploadOverlayOnEscape() {
+  if (isKeyPressed(event, ESCAPE_KEY_CODE)) {
+    toggleUploadOverlay(hiddenElementClass, OVERLAY_IS_HIDDEN);
+  }
 }
 /**
  * Функция устанавливает текущий масштаб изображения и отображает значение масштаба в форме кадрирования
@@ -57,7 +85,7 @@ function setAndDisplayImageScaleValue(scale) {
 
 //  Подключение обработчика событий при изменении статуса поля загрузки изображения
 uploadFormInput.addEventListener('change', function () {
-  toggleUploadOverlay(hiddenElementClass);
+  toggleUploadOverlay(hiddenElementClass, OVERLAY_IS_VISIBLE);
   setAndDisplayImageScaleValue(defaultImageScale);
   //  Сброс фильтра на значение по умолчанию
   for (var i = 0, length = filterToggle.length; i < length; i++) {
@@ -69,15 +97,24 @@ uploadFormInput.addEventListener('change', function () {
 });
 //  Подключение обработчика событий к кнопке закрытия формы кадрирования изображения
 uploadCancel.addEventListener('click', function () {
-  toggleUploadOverlay(hiddenElementClass);
+  console.log('X clicked');
+  toggleUploadOverlay(hiddenElementClass, OVERLAY_IS_HIDDEN);
 });
-//  Подключение обработчика событий к радиобаттонам фильтров
-for (var i = 0, length = filterToggle.length; i < length; i++) {
-  filterToggle[i].addEventListener('change', function (event) {
+//  Подключение обработчика клика к блоку контроля фильтров изображения
+filterControls.addEventListener('click', function () {
+  imagePreview.className = imagePreviewClass;
+  imagePreview.classList.add('filter-' + event.target.value);
+});
+//  Подключение обработчика нажатия клавиши ENTER к блоку контроля фильтров изображения
+filterControls.addEventListener('keydown', function () {
+  if (isKeyPressed(event, ENTER_KEY_CODE)) {
+    var filter = event.target;
+    var filterName = filter.control.defaultValue;
+    filter.control.checked = true;
     imagePreview.className = imagePreviewClass;
-    imagePreview.classList.add('filter-' + event.target.value);
-  });
-}
+    imagePreview.classList.add('filter-' + filterName);
+  }
+});
 //  Управление масштабом изображения
 //  Подключение обработчика событий к кнопке увеличения масштаба изображения
 increaseImageScale.addEventListener('click', function () {
