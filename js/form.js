@@ -43,9 +43,8 @@ var DECIMAL_BASE = 10;
 var ESCAPE_KEY_CODE = 27;
 var ENTER_KEY_CODE = 13;
 
-//  Флаги, определяющие видимость блока с формой кадрирования
-var OVERLAY_IS_VISIBLE = true;
-var OVERLAY_IS_HIDDEN = false;
+//  Флаг, определяющий видимость блока с формой кадрирования
+var VISIBILITY_FLAG = true;
 
 function isKeyPressed(event, key) {
   return event.keyCode && event.keyCode === key;
@@ -56,22 +55,20 @@ function isKeyPressed(event, key) {
  * @param {boolean} overlayVisibility - статус видимости формы кадрирования после срабатывания функции
  */
 function toggleUploadOverlay(className, overlayVisibility) {
+  uploadForm.classList.toggle(className, overlayVisibility);
+  uploadOverlay.classList.toggle(className, !overlayVisibility);
   if (overlayVisibility) {
-    uploadForm.classList.toggle(className, true);
-    uploadOverlay.classList.toggle(className, false);
     uploadCancel.setAttribute('aria-pressed', 'false');
     document.addEventListener('keydown', closeUploadOverlayOnEscape);
   } else {
-    uploadForm.classList.toggle(className, false);
-    uploadOverlay.classList.toggle(className, true);
     uploadCancel.setAttribute('aria-pressed', 'true');
     document.removeEventListener('keydown', closeUploadOverlayOnEscape);
   }
 }
 //  Функция, скрывающая форму кадрирования при нажатии клавиши ESCAPE
-function closeUploadOverlayOnEscape() {
+function closeUploadOverlayOnEscape(event) {
   if (isKeyPressed(event, ESCAPE_KEY_CODE)) {
-    toggleUploadOverlay(hiddenElementClass, OVERLAY_IS_HIDDEN);
+    toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
   }
 }
 /**
@@ -85,7 +82,7 @@ function setAndDisplayImageScaleValue(scale) {
 
 //  Подключение обработчика событий при изменении статуса поля загрузки изображения
 uploadFormInput.addEventListener('change', function () {
-  toggleUploadOverlay(hiddenElementClass, OVERLAY_IS_VISIBLE);
+  toggleUploadOverlay(hiddenElementClass, VISIBILITY_FLAG);
   setAndDisplayImageScaleValue(defaultImageScale);
   //  Сброс фильтра на значение по умолчанию
   for (var i = 0, length = filterToggle.length; i < length; i++) {
@@ -97,15 +94,17 @@ uploadFormInput.addEventListener('change', function () {
 });
 //  Подключение обработчика событий к кнопке закрытия формы кадрирования изображения
 uploadCancel.addEventListener('click', function () {
-  toggleUploadOverlay(hiddenElementClass, OVERLAY_IS_HIDDEN);
+  toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
 });
 //  Подключение обработчика клика к блоку контроля фильтров изображения
-filterControls.addEventListener('click', function () {
-  imagePreview.className = imagePreviewClass;
-  imagePreview.classList.add('filter-' + event.target.value);
+filterControls.addEventListener('click', function (event) {
+  if (event.target !== filterControls) {
+    imagePreview.className = imagePreviewClass;
+    imagePreview.classList.add('filter-' + event.target.value);
+  }
 });
 //  Подключение обработчика нажатия клавиши ENTER к блоку контроля фильтров изображения
-filterControls.addEventListener('keydown', function () {
+filterControls.addEventListener('keydown', function (event) {
   if (isKeyPressed(event, ENTER_KEY_CODE)) {
     var filter = event.target;
     var filterName = filter.control.defaultValue;
