@@ -21,7 +21,7 @@ window.initializeScale = function (scaleControlElement, scaleStep, defaultScale,
   //  Класс кнопки уменьшения масштаба
   var decreaseScaleButtonClass = 'upload-resize-controls-button-dec';
   //  Индикатор текущего масштаба изображаения
-  var currentImageScale = window.uploadOverlay.querySelector('.upload-resize-controls-value');
+  var currentImageScale = document.querySelector('.upload-resize-controls-value');
 
   /**
    * Функция устанавливает текущий масштаб изображения и отображает значение масштаба в форме кадрирования
