@@ -1,13 +1,6 @@
 'use strict';
 
-/**
- * Функция изменения масштаба изображения
- * @param {Object} scaleControlElement - элемент, управляющий масштабом
- * @param {number} scaleStep - шаг изменения масштаба
- * @param {number} defaultScale - масштаб по умолчанию
- * @param {Object} preview - блок предпросмотра изображения
- */
-window.initializeScale = function (scaleControlElement, scaleStep, defaultScale, preview) {
+window.initializeScale = (function () {
   //  Основание десятичной  системы счисления
   var DECIMAL_BASE = 10;
   //  Делитель, нужный для перевода значения процентов в доли целого
@@ -26,8 +19,9 @@ window.initializeScale = function (scaleControlElement, scaleStep, defaultScale,
   /**
    * Функция устанавливает текущий масштаб изображения и отображает значение масштаба в форме кадрирования
    * @param {number} scale - текущий масштаб изображения, в процентах
+   * @param {Object} preview - блок предпросмотра изображения
    */
-  this.setAndDisplayImageScaleValue = function (scale) {
+  var setAndDisplayImageScaleValue = function (scale, preview) {
     currentImageScale.value = scale + '%';
     preview.style.transform = 'scale(' + (scale / PERCENT) + ')';
   };
@@ -35,23 +29,25 @@ window.initializeScale = function (scaleControlElement, scaleStep, defaultScale,
   /**
    * Функция изменения масштаба изображения
    * @param {boolean} resizeFlag - если true, масштаб изменяется в сторону увеличения, иначе в сторону уменьшения
+   * @param {number} scaleStep - шаг изменения масштаба
+   * @param {Object} preview - блок предпросмотра изображения
    */
-  function resizeImage(resizeFlag) {
+  var resizeImage = function (resizeFlag, scaleStep, preview) {
     var currentScaleValue;
     if (resizeFlag) {
       currentScaleValue = Math.min(parseInt(currentImageScale.value, DECIMAL_BASE) + scaleStep, maxImageScale);
     } else {
       currentScaleValue = Math.max(parseInt(currentImageScale.value, DECIMAL_BASE) - scaleStep, minImageScale);
     }
-    window.setAndDisplayImageScaleValue(currentScaleValue);
-  }
+    setAndDisplayImageScaleValue(currentScaleValue, preview);
+  };
 
   /**
    * Функция определяет направление изменения масштаба в зависимости от того, какая кнопка нажата + или -
    * @param {Object} event
    * @return {boolean} - флаг, определяющий направление изменения масштаба изображения
    */
-  function setScaleIncreaseOrDecrease(event) {
+  var setScaleIncreaseOrDecrease = function (event) {
     var controlButton = event.target;
     var resizeFlag;
     if (controlButton.classList.contains(increaseScaleButtonClass)) {
@@ -60,11 +56,27 @@ window.initializeScale = function (scaleControlElement, scaleStep, defaultScale,
       resizeFlag = false;
     }
     return resizeFlag;
-  }
-  //  Установка значения масштаба по умолчанию
-  window.setAndDisplayImageScaleValue(defaultScale);
+  };
 
-  scaleControlElement.addEventListener('click', function (event) {
-    resizeImage(setScaleIncreaseOrDecrease(event));
-  });
-};
+  return {
+    /**
+     * Метод управляет изменением масштаба изображения
+     * @param {Object} scaleControlElement - элемент страницы (кнопка изменения масштаба)
+     * @param {number} scaleStep - шаг изменения масштаба
+     * @param {Object} preview - блок предпросмотра изображения
+     */
+    activateScale: function (scaleControlElement, scaleStep, preview) {
+      scaleControlElement.addEventListener('click', function (event) {
+        resizeImage(setScaleIncreaseOrDecrease(event), scaleStep, preview);
+      });
+    },
+    /**
+     * Метод сбрасывает значение масштаба изображения на величину по умолчанию
+     * @param {number} defaultScale - масштаб по умолчанию
+     * @param {Object} preview - блок предпросмотра изображения
+     */
+    resetScale: function (defaultScale, preview) {
+      setAndDisplayImageScaleValue(defaultScale, preview);
+    }
+  };
+})();

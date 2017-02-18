@@ -47,7 +47,7 @@ function toggleUploadOverlay(className, overlayVisibility) {
 }
 //  Функция, скрывающая форму кадрирования при нажатии клавиши ESCAPE
 function closeUploadOverlayOnEscape(event) {
-  if (window.utils.isKeyPressed(event, window.utils.ESCAPE_KEY_CODE)) {
+  if (window.utils.isDeactivateEvent(event)) {
     toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
   }
 }
@@ -56,14 +56,14 @@ uploadFormInput.addEventListener('change', function () {
   //  Показ формы кадрирования изображения
   toggleUploadOverlay(hiddenElementClass, VISIBILITY_FLAG);
   //  Установка масштабу изображения значения по умолчанию
-  window.setAndDisplayImageScaleValue(defaultImageScale);
+  window.initializeScale.resetScale(defaultImageScale, imagePreview);
   //  Установка фильтру изображения значения по умолчанию
-  window.resetFilterToDefault(defaultFilterValue, imagePreview, imagePreviewClass);
+  window.initializeFilters.resetFilters(filterControls, defaultFilterValue, imagePreview, imagePreviewClass);
 });
 //  Инициализация управления масштабом изображения
-window.initializeScale(scaleControl, changeImageScaleStep, defaultImageScale, imagePreview);
+window.initializeScale.activateScale(scaleControl, changeImageScaleStep, imagePreview);
 //  Инициализация фильтров изображения
-window.initializeFilters(filterControls, imagePreview, imagePreviewClass);
+window.initializeFilters.activateFilters(filterControls, imagePreview, imagePreviewClass);
 //  Подключение обработчика событий к кнопке закрытия формы кадрирования изображения
 uploadCancel.addEventListener('click', function () {
   toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);

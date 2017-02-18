@@ -1,17 +1,28 @@
 'use strict';
 
-window.utils = {
+window.utils = (function () {
   //  Код клавиши ENTER
-  ENTER_KEY_CODE: 13,
+  var ENTER_KEY_CODE = 13;
   //  Код клавиши ESCAPE
-  ESCAPE_KEY_CODE: 27,
-  /**
-   * Метод, проверяющий нажатие клавиши
-   * @param {Object} event - клавиатурное событие
-   * @param {number} key - код клавишы
-   * @return {boolean}
-   */
-  isKeyPressed: function (event, key) {
-    return event.keyCode && event.keyCode === key;
+  var ESCAPE_KEY_CODE = 27;
+
+  return {
+    /**
+     * Метод, проверяющий нажатие клавиши ENTER
+     * @param {Object} event - клавиатурное событие
+     * @return {boolean}
+     */
+    isActivateEvent: function (event) {
+      return event.keyCode && event.keyCode === ENTER_KEY_CODE;
+    },
+
+    /**
+     * Метод, проверяющий нажатие клавиши ESCAPE
+     * @param {Object} event - клавиатурное событие
+     * @return {boolean}
+     */
+    isDeactivateEvent: function (event) {
+      return event.keyCode && event.keyCode === ESCAPE_KEY_CODE;
+    }
   }
-};
+})();
