@@ -57,6 +57,8 @@ window.initializeScale = (function () {
     }
     return resizeFlag;
   };
+  //  Ссылка на обработчик управления масштабом изображения
+  var scaleHandler = null;
 
   return {
     /**
@@ -66,10 +68,20 @@ window.initializeScale = (function () {
      * @param {Object} preview - блок предпросмотра изображения
      */
     activateScale: function (scaleControlElement, scaleStep, preview) {
-      scaleControlElement.addEventListener('click', function (event) {
+      scaleHandler = function (event) {
         resizeImage(setScaleIncreaseOrDecrease(event), scaleStep, preview);
-      });
+      };
+      scaleControlElement.addEventListener('click', scaleHandler);
     },
+
+    /**
+     * Деактивация управления масштабом
+     * @param {Object} scaleControlElement - элемент страницы (кнопка изменения масштаба)
+     */
+    deactivateScale: function (scaleControlElement) {
+      scaleControlElement.removeEventListener('click', scaleHandler);
+    },
+
     /**
      * Метод сбрасывает значение масштаба изображения на величину по умолчанию
      * @param {number} defaultScale - масштаб по умолчанию

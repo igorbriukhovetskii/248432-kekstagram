@@ -38,6 +38,11 @@ window.initializeFilters = (function () {
     }
   };
 
+  //  Ссылка на обработчик клика мышью
+  var clickHandler = null;
+  //  Ссылка на обработчик нажатия клавиши
+  var keydownHandler = null;
+
   return {
     /**
      * Метод инициализирует работу фильтров
@@ -46,15 +51,26 @@ window.initializeFilters = (function () {
      * @param {string} previewClass - класс блока предпросмотра изображения
      */
     activateFilters: function (filtersBlock, previewImage, previewClass) {
-      filtersBlock.addEventListener('click', function (event) {
+      clickHandler = function (event) {
         applyFilterOnClick(event, filtersBlock, previewImage, previewClass);
-      });
+      };
+      filtersBlock.addEventListener('click', clickHandler);
 
-      filtersBlock.addEventListener('keydown', function (event) {
+      keydownHandler = function (event) {
         if (window.utils.isActivateEvent(event)) {
           applyFilterOnKeydown(event, previewImage, previewClass);
         }
-      });
+      };
+      filtersBlock.addEventListener('keydown', keydownHandler);
+    },
+
+    /**
+     * Метод деактивирует работу фильтров
+     * @param {Object} filtersBlock - блок контроля фильтров изображения
+     */
+    deactivateFilters: function (filtersBlock) {
+      filtersBlock.removeEventListener('click', clickHandler);
+      filtersBlock.removeEventListener('keydown', keydownHandler);
     },
 
     /**
