@@ -24,5 +24,5 @@ window.utils = (function () {
     isDeactivateEvent: function (event) {
       return event.keyCode && event.keyCode === ESCAPE_KEY_CODE;
     }
-  }
+  };
 })();
