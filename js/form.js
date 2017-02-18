@@ -9,22 +9,14 @@ var uploadOverlay = document.querySelector('.upload-overlay');
 var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
 //  Блок фильтров изображения
 var filterControls = uploadOverlay.querySelector('.upload-filter-controls');
-//  Переключатели фильтров изображения
-var filterToggle = uploadOverlay.querySelectorAll('input[name = "upload-filter"]');
+//  Значение фильтра по умолчанию
+var defaultFilterValue = 'none';
 //  Предпросмотр изображения
 var imagePreview = uploadOverlay.querySelector('.filter-image-preview');
-//  Кнопка увеличения размера изображения
-var increaseImageScale = uploadOverlay.querySelector('.upload-resize-controls-button-inc');
-//  Кнопка уменьшения размера изображения
-var decreaseImageScale = uploadOverlay.querySelector('.upload-resize-controls-button-dec');
-//  Индикатор текущего масштаба изображаения
-var currentImageScale = uploadOverlay.querySelector('.upload-resize-controls-value');
+//  Блок управления масштабом изображения
+var scaleControl = uploadOverlay.querySelector('.upload-resize-controls');
 //  Масштаб изображения по умолчанию
 var defaultImageScale = 100;
-//  Максимально возможный масштаб изображения
-var maxImageScale = 100;
-//  Минимально возможный масштаб изображения
-var minImageScale = 25;
 //  Шаг изменения масштаба изображения
 var changeImageScaleStep = 25;
 
@@ -34,21 +26,9 @@ var imagePreviewClass = 'filter-image-preview';
 //  Класс скрытого блока
 var hiddenElementClass = 'invisible';
 
-//  Константы
-//  Делитель, нужный для перевода значения процентов в доли целого
-var PERCENT = 100;
-//  Основание десятичной  системы счисления
-var DECIMAL_BASE = 10;
-//  Код клавиши ESCAPE
-var ESCAPE_KEY_CODE = 27;
-var ENTER_KEY_CODE = 13;
-
 //  Флаг, определяющий видимость блока с формой кадрирования
 var VISIBILITY_FLAG = true;
 
-function isKeyPressed(event, key) {
-  return event.keyCode && event.keyCode === key;
-}
 /**
  * Функция, показывающая/скрывающая форму кадрирования изображения
  * @param {string} className - класс для сокрытия блока
@@ -67,60 +47,24 @@ function toggleUploadOverlay(className, overlayVisibility) {
 }
 //  Функция, скрывающая форму кадрирования при нажатии клавиши ESCAPE
 function closeUploadOverlayOnEscape(event) {
-  if (isKeyPressed(event, ESCAPE_KEY_CODE)) {
+  if (window.utils.isDeactivateEvent(event)) {
     toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
   }
 }
-/**
- * Функция устанавливает текущий масштаб изображения и отображает значение масштаба в форме кадрирования
- * @param {number} scale - текущий масштаб изображения, в процентах
- */
-function setAndDisplayImageScaleValue(scale) {
-  currentImageScale.value = scale + '%';
-  imagePreview.style.transform = 'scale(' + (scale / PERCENT) + ')';
-}
-
 //  Подключение обработчика событий при изменении статуса поля загрузки изображения
 uploadFormInput.addEventListener('change', function () {
+  //  Показ формы кадрирования изображения
   toggleUploadOverlay(hiddenElementClass, VISIBILITY_FLAG);
-  setAndDisplayImageScaleValue(defaultImageScale);
-  //  Сброс фильтра на значение по умолчанию
-  for (var i = 0, length = filterToggle.length; i < length; i++) {
-    if (filterToggle[i].checked === true) {
-      imagePreview.className = imagePreviewClass;
-      imagePreview.classList.add('filter-' + filterToggle[i].value);
-    }
-  }
+  //  Установка масштабу изображения значения по умолчанию
+  window.initializeScale.resetScale(defaultImageScale, imagePreview);
+  //  Установка фильтру изображения значения по умолчанию
+  window.initializeFilters.resetFilters(filterControls, defaultFilterValue, imagePreview, imagePreviewClass);
 });
+//  Инициализация управления масштабом изображения
+window.initializeScale.activateScale(scaleControl, changeImageScaleStep, imagePreview);
+//  Инициализация фильтров изображения
+window.initializeFilters.activateFilters(filterControls, imagePreview, imagePreviewClass);
 //  Подключение обработчика событий к кнопке закрытия формы кадрирования изображения
 uploadCancel.addEventListener('click', function () {
   toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
-});
-//  Подключение обработчика клика к блоку контроля фильтров изображения
-filterControls.addEventListener('click', function (event) {
-  if (event.target !== filterControls) {
-    imagePreview.className = imagePreviewClass;
-    imagePreview.classList.add('filter-' + event.target.value);
-  }
-});
-//  Подключение обработчика нажатия клавиши ENTER к блоку контроля фильтров изображения
-filterControls.addEventListener('keydown', function (event) {
-  if (isKeyPressed(event, ENTER_KEY_CODE)) {
-    var filter = event.target;
-    var filterName = filter.control.defaultValue;
-    filter.control.checked = true;
-    imagePreview.className = imagePreviewClass;
-    imagePreview.classList.add('filter-' + filterName);
-  }
-});
-//  Управление масштабом изображения
-//  Подключение обработчика событий к кнопке увеличения масштаба изображения
-increaseImageScale.addEventListener('click', function () {
-  var currentIntegerScaleValue = Math.min(parseInt(currentImageScale.value, DECIMAL_BASE) + changeImageScaleStep, maxImageScale);
-  setAndDisplayImageScaleValue(currentIntegerScaleValue);
-});
-//  Подключение обработчика событий к кнопке уменьшения масштаба изображения
-decreaseImageScale.addEventListener('click', function () {
-  var currentIntegerScaleValue = Math.max(parseInt(currentImageScale.value, DECIMAL_BASE) - changeImageScaleStep, minImageScale);
-  setAndDisplayImageScaleValue(currentIntegerScaleValue);
 });
