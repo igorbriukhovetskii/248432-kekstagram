@@ -1,14 +1,12 @@
 'use strict';
 
 window.initializeScale = (function () {
-  //  Основание десятичной  системы счисления
-  var DECIMAL_BASE = 10;
-  //  Делитель, нужный для перевода значения процентов в доли целого
-  var PERCENT = 100;
   //  Максимально возможный масштаб изображения
   var maxImageScale = 100;
   //  Минимально возможный масштаб изображения
   var minImageScale = 25;
+  //  Последний выбранный масштаб изображения
+  var currentScaleValue = null;
   //  Класс кнопки увеличения масштаба
   var increaseScaleButtonClass = 'upload-resize-controls-button-inc';
   //  Класс кнопки уменьшения масштаба
@@ -17,29 +15,24 @@ window.initializeScale = (function () {
   var currentImageScale = document.querySelector('.upload-resize-controls-value');
 
   /**
-   * Функция устанавливает текущий масштаб изображения и отображает значение масштаба в форме кадрирования
-   * @param {number} scale - текущий масштаб изображения, в процентах
-   * @param {Object} preview - блок предпросмотра изображения
-   */
-  var setAndDisplayImageScaleValue = function (scale, preview) {
-    currentImageScale.value = scale + '%';
-    preview.style.transform = 'scale(' + (scale / PERCENT) + ')';
-  };
-
-  /**
    * Функция изменения масштаба изображения
    * @param {boolean} resizeFlag - если true, масштаб изменяется в сторону увеличения, иначе в сторону уменьшения
    * @param {number} scaleStep - шаг изменения масштаба
-   * @param {Object} preview - блок предпросмотра изображения
    */
-  var resizeImage = function (resizeFlag, scaleStep, preview) {
-    var currentScaleValue;
+  var getNewControlValue = function (resizeFlag, scaleStep) {
     if (resizeFlag) {
-      currentScaleValue = Math.min(parseInt(currentImageScale.value, DECIMAL_BASE) + scaleStep, maxImageScale);
+      currentScaleValue = Math.min(currentScaleValue + scaleStep, maxImageScale);
     } else {
-      currentScaleValue = Math.max(parseInt(currentImageScale.value, DECIMAL_BASE) - scaleStep, minImageScale);
+      currentScaleValue = Math.max(currentScaleValue - scaleStep, minImageScale);
     }
-    setAndDisplayImageScaleValue(currentScaleValue, preview);
+  };
+
+  /**
+   * Функция изменения значения счётчика масштаба
+   * @param {number} value - текущее отображаемое значение счётчика
+   */
+  var displayNewValue = function (value) {
+    currentImageScale.value = value + '%';
   };
 
   /**
@@ -57,26 +50,32 @@ window.initializeScale = (function () {
     }
     return resizeFlag;
   };
+
   //  Ссылка на обработчик управления масштабом изображения
   var scaleHandler = null;
 
   return {
     /**
      * Метод управляет изменением масштаба изображения
-     * @param {Object} scaleControlElement - элемент страницы (кнопка изменения масштаба)
+     * @param {Object} scaleControlElement - элемент страницы (контрол изменения масштаба)
      * @param {number} scaleStep - шаг изменения масштаба
-     * @param {Object} preview - блок предпросмотра изображения
+     * @param {function} callback - функция применения текущего масштаба к соответствующему стилю CSS
      */
-    activateScale: function (scaleControlElement, scaleStep, preview) {
+    activateScale: function (scaleControlElement, scaleStep, callback) {
       scaleHandler = function (event) {
-        resizeImage(setScaleIncreaseOrDecrease(event), scaleStep, preview);
+        getNewControlValue(setScaleIncreaseOrDecrease(event), scaleStep);
+        displayNewValue(currentScaleValue);
+
+        if (typeof callback === 'function') {
+          callback(currentScaleValue);
+        }
       };
       scaleControlElement.addEventListener('click', scaleHandler);
     },
 
     /**
      * Деактивация управления масштабом
-     * @param {Object} scaleControlElement - элемент страницы (кнопка изменения масштаба)
+     * @param {Object} scaleControlElement - элемент страницы (контрол изменения масштаба)
      */
     deactivateScale: function (scaleControlElement) {
       scaleControlElement.removeEventListener('click', scaleHandler);
@@ -85,10 +84,15 @@ window.initializeScale = (function () {
     /**
      * Метод сбрасывает значение масштаба изображения на величину по умолчанию
      * @param {number} defaultScale - масштаб по умолчанию
-     * @param {Object} preview - блок предпросмотра изображения
+     * @param {function} callback - функция применения текущего масштаба к соответствующему стилю CSS
      */
-    resetScale: function (defaultScale, preview) {
-      setAndDisplayImageScaleValue(defaultScale, preview);
+    resetScale: function (defaultScale, callback) {
+      currentScaleValue = defaultScale;
+      displayNewValue(currentScaleValue);
+
+      if (typeof callback === 'function') {
+        callback(defaultScale);
+      }
     }
   };
 })();

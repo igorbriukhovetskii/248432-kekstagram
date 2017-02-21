@@ -36,14 +36,31 @@
     toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
   };
 
+  /**
+   * Call-back функция изменения масштаба изображения
+   * @param {number} scale - текущее значение, вычесленное модулем initialize-scale;
+   */
+  var resizeImage = function (scale) {
+    imagePreview.style.transform = 'scale(' + (scale / 100) + ')';
+  };
+
+  /**
+   * Call-back функция изменения CSS-фильтра, применённого к изображению
+   * @param {string} filter - текущее значение фильтра, полученное модулем initialize-filters
+   */
+  var applyFilter = function (filter) {
+    imagePreview.className = imagePreviewClass;
+    imagePreview.classList.add('filter-' + filter);
+  };
+
   //  Функция показа формы кадрирования после загрузки изображения
   var uploadHandler = function () {
     //  Показ формы кадрирования изображения
     toggleUploadOverlay(hiddenElementClass, VISIBILITY_FLAG);
     //  Установка масштабу изображения значения по умолчанию
-    window.initializeScale.resetScale(defaultImageScale, imagePreview);
+    window.initializeScale.resetScale(defaultImageScale, resizeImage);
     //  Установка фильтру изображения значения по умолчанию
-    window.initializeFilters.resetFilters(filterControls, defaultFilterValue, imagePreview, imagePreviewClass);
+    window.initializeFilters.resetFilters(filterControls, defaultFilterValue, applyFilter);
   };
 
   /**
@@ -60,9 +77,9 @@
       //  Подключение обработчика для закрытия формы кадрирования при нажатии ESCAPE
       document.addEventListener('keydown', closeUploadOverlayOnEscape);
       //  Активация фильтров
-      window.initializeFilters.activateFilters(filterControls, imagePreview, imagePreviewClass);
+      window.initializeFilters.activateFilters(filterControls, applyFilter);
       //  Активация изменения масштаба изображения
-      window.initializeScale.activateScale(scaleControl, changeImageScaleStep, imagePreview);
+      window.initializeScale.activateScale(scaleControl, changeImageScaleStep, resizeImage);
       //  Удаление обработчика для показа формы кадрирования при загрузке изображения
       uploadFormInput.removeEventListener('change', uploadHandler);
     } else {

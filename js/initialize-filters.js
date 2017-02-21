@@ -1,43 +1,29 @@
 'use strict';
 
 window.initializeFilters = (function () {
-  /**
-   * Функция присвоения предпросмотру изображения класса соответствующего фильтра
-   * @param {Object} previewImage - блок предпросмотра изображения, к нему применяются эффекты фильтров
-   * @param {string} previewImageClass - класс блока предпросмотра изображения
-   * @param {string} filterValue - значение выбранного фильтра
-   */
-  var addFilterClassToImage = function (previewImage, previewImageClass, filterValue) {
-    previewImage.className = previewImageClass;
-    previewImage.classList.add('filter-' + filterValue);
-  };
+  //  Текущий фильтр
+  var currentFilter = null;
 
   /**
-   * Функция применения фильтра по нажатию клавиши
+   * Функция получения значения фильтра по нажатию клавиши
    * @param {Object} event - клавиатурное событие
-   * @param {Object} previewImage - блок предпросмотра изображения, к нему применяются эффекты фильтров
-   * @param {string} previewImageClass - класс блока предпросмотра изображения
    */
-  var applyFilterOnKeydown = function (event, previewImage, previewImageClass) {
+  var getFilterOnKeydown = function (event) {
     var filter = event.target;
-    var filterName = filter.control.defaultValue;
     filter.control.checked = true;
-    addFilterClassToImage(previewImage, previewImageClass, filterName);
+    currentFilter = filter.control.defaultValue;
   };
 
   /**
-   * Функция применения фильтра по клику мышью на элемент управления
+   * Функция получения значения фильтра по клику мышью на элемент управления
    * @param {Object} event - событие мыши
    * @param {Object} filtersBlock - блок контроля фильтров изображения
-   * @param {Object} previewImage - блок предпросмотра изображения, к нему применяются эффекты фильтров
-   * @param {string} previewImageClass - класс блока предпросмотра изображения
    */
-  var applyFilterOnClick = function (event, filtersBlock, previewImage, previewImageClass) {
+  var getFilterOnClick = function (event, filtersBlock) {
     if (event.target !== filtersBlock) {
-      addFilterClassToImage(previewImage, previewImageClass, event.target.value);
+      currentFilter = event.target.value;
     }
   };
-
   //  Ссылка на обработчик клика мышью
   var clickHandler = null;
   //  Ссылка на обработчик нажатия клавиши
@@ -47,18 +33,25 @@ window.initializeFilters = (function () {
     /**
      * Метод инициализирует работу фильтров
      * @param {Object} filtersBlock - блок контроля фильтров изображения
-     * @param {Object} previewImage - блок предпросмотра изображения, к нему применяются эффекты фильтров
-     * @param {string} previewClass - класс блока предпросмотра изображения
+     * @param {function} callback - функция применения текущего значения фильтра
      */
-    activateFilters: function (filtersBlock, previewImage, previewClass) {
+    activateFilters: function (filtersBlock, callback) {
       clickHandler = function (event) {
-        applyFilterOnClick(event, filtersBlock, previewImage, previewClass);
+        getFilterOnClick(event, filtersBlock);
+
+        if (typeof callback === 'function') {
+          callback(currentFilter);
+        }
       };
       filtersBlock.addEventListener('click', clickHandler);
 
       keydownHandler = function (event) {
         if (window.utils.isActivateEvent(event)) {
-          applyFilterOnKeydown(event, previewImage, previewClass);
+          getFilterOnKeydown(event);
+
+          if (typeof callback === 'function') {
+            callback(currentFilter);
+          }
         }
       };
       filtersBlock.addEventListener('keydown', keydownHandler);
@@ -77,13 +70,16 @@ window.initializeFilters = (function () {
      * Метод задаёт фильтру изображения значение по умолчанию
      * @param {Object} filtersBlock - блок контроля фильтров изображения
      * @param {string} defaultValue - значение фильтра по умолчанию
-     * @param {Object} previewImage - блок предпросмотра изображения, к нему применяются эффекты фильтров
-     * @param {string} previewImageClass - класс блока предпросмотра изображения
+     * @param {function} callback - функция применения текущего значения фильтра
      */
-    resetFilters: function (filtersBlock, defaultValue, previewImage, previewImageClass) {
-      addFilterClassToImage(previewImage, previewImageClass, defaultValue);
+    resetFilters: function (filtersBlock, defaultValue, callback) {
       var defaultFilterToggle = filtersBlock.querySelector('input[value=' + defaultValue);
       defaultFilterToggle.checked = true;
+      currentFilter = defaultValue;
+
+      if (typeof callback === 'function') {
+        callback(defaultValue);
+      }
     }
   };
 })();
