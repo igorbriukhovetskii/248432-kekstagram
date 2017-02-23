@@ -14,11 +14,16 @@ window.initializeScale = (function () {
    * @param {number} scaleStep - шаг изменения масштаба
    */
   var getNewControlValue = function (resizeFlag, scaleStep) {
-    if (resizeFlag) {
-      currentScaleValue = Math.min(currentScaleValue + scaleStep, MAX_IMAGE_SCALE);
-    } else {
-      currentScaleValue = Math.max(currentScaleValue - scaleStep, MIN_IMAGE_SCALE);
+
+    switch (resizeFlag) {
+      case true:
+        currentScaleValue = Math.min(currentScaleValue + scaleStep, MAX_IMAGE_SCALE);
+        break;
+      case false:
+        currentScaleValue = Math.max(currentScaleValue - scaleStep, MIN_IMAGE_SCALE);
+        break;
     }
+
   };
 
   /**
@@ -38,12 +43,15 @@ window.initializeScale = (function () {
    * @return {boolean} - флаг, определяющий направление изменения масштаба изображения
    */
   var setScaleIncreaseOrDecrease = function (event) {
-    var resizeFlag;
-    switch (event.target.innerHTML) {
+    var resizeFlag = null;
+
+    switch (event.target.innerText) {
       case '+':
-        return true;
-      case '-':
-        return false;
+        resizeFlag = true;
+        break;
+      case '–':
+        resizeFlag = false;
+        break;
     }
     return resizeFlag;
   };
