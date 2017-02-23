@@ -5,11 +5,6 @@ window.initializeScale = (function () {
   var MAX_IMAGE_SCALE = 100;
   //  Минимально возможный масштаб изображения
   var MIN_IMAGE_SCALE = 25;
-  //  Класс кнопки увеличения масштаба
-  var INCREASE_SCALE_BUTTON_CLASS = 'upload-resize-controls-button-inc';
-  //  Класс кнопки уменьшения масштаба
-  var DECREASE_SCALE_BUTTON_CLASS = 'upload-resize-controls-button-dec';
-
   //  Последний выбранный масштаб изображения
   var currentScaleValue = null;
 
@@ -38,29 +33,18 @@ window.initializeScale = (function () {
   };
 
   /**
-   * Функция проверки наличия класса у элемента
-   * @param {Object} event
-   * @param {string} className - имя CSS-класса
-   * @return {boolean}
-   */
-  var isContainClass = function (event, className) {
-    var target = event.target;
-    return target.classList.contains(className);
-  };
-  /**
    * Функция определяет направление изменения масштаба в зависимости от того, какая кнопка нажата + или -
    * @param {Object} event
    * @return {boolean} - флаг, определяющий направление изменения масштаба изображения
    */
   var setScaleIncreaseOrDecrease = function (event) {
-    var resizeFlag;
-    if (isContainClass(event, INCREASE_SCALE_BUTTON_CLASS)) {
-      resizeFlag = true;
+    switch (event.target.innerHTML) {
+      case '+':
+        return true;
+      case '-':
+        return false;
+      default: return -1;
     }
-    if (isContainClass(event, DECREASE_SCALE_BUTTON_CLASS)) {
-      resizeFlag = false;
-    }
-    return resizeFlag;
   };
 
   //  Ссылка на обработчик управления масштабом изображения
