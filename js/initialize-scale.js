@@ -38,13 +38,14 @@ window.initializeScale = (function () {
    * @return {boolean} - флаг, определяющий направление изменения масштаба изображения
    */
   var setScaleIncreaseOrDecrease = function (event) {
+    var resizeFlag;
     switch (event.target.innerHTML) {
       case '+':
         return true;
       case '-':
         return false;
-      default: return -1;
     }
+    return resizeFlag;
   };
 
   //  Ссылка на обработчик управления масштабом изображения
