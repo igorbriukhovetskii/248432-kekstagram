@@ -18,9 +18,9 @@
   //  Блок управления масштабом изображения
   var scaleControl = uploadOverlay.querySelector('.upload-resize-controls');
   //  Масштаб изображения по умолчанию
-  var defaultImageScale = 100;
+  var DEFAULT_IMAGE_SCALE = 100;
   //  Шаг изменения масштаба изображения
-  var changeImageScaleStep = 25;
+  var SCALE_STEP = 25;
 
   //  Переменные, хранящие имена классов CSS
   //  Класс изображения с предпросмотром эффектов наложения фильтра и кадрирования
@@ -58,7 +58,7 @@
     //  Показ формы кадрирования изображения
     toggleUploadOverlay(hiddenElementClass, VISIBILITY_FLAG);
     //  Установка масштабу изображения значения по умолчанию
-    window.initializeScale.resetScale(defaultImageScale, resizeImage);
+    window.initializeScale.resetScale(DEFAULT_IMAGE_SCALE, scaleControl, resizeImage);
     //  Установка фильтру изображения значения по умолчанию
     window.initializeFilters.resetFilters(filterControls, defaultFilterValue, applyFilter);
   };
@@ -79,7 +79,7 @@
       //  Активация фильтров
       window.initializeFilters.activateFilters(filterControls, applyFilter);
       //  Активация изменения масштаба изображения
-      window.initializeScale.activateScale(scaleControl, changeImageScaleStep, resizeImage);
+      window.initializeScale.activateScale(scaleControl, SCALE_STEP, resizeImage);
       //  Удаление обработчика для показа формы кадрирования при загрузке изображения
       uploadFormInput.removeEventListener('change', uploadHandler);
     } else {
