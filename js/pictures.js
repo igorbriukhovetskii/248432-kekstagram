@@ -18,8 +18,8 @@
 
   /**
    * Функция выбирает 10 не повторяющихся карточек изображений из массива полученного с сервера
-   * @param {Object} array - массив для сортировки
-   * @return {Array} sortedArray - отсортированный массив
+   * @param {Object[]} array - массив для сортировки
+   * @return {Object[]} sortedArray - отсортированный массив
    */
   var sortImagesByNew = function (array) {
     var arrayCopy = array.slice();
@@ -36,8 +36,8 @@
 
   /**
    * Функция сортирует полученный с сервера массив карточек изображений по количеству комментариев в порядке убывания
-   * @param {Object} array - массив для сортировки
-   * @return {Array} sortedArray - отсортированный массив
+   * @param {Object[]} array - массив для сортировки
+   * @return {Object[]} sortedArray - отсортированный массив
    */
   var sortImagesByComments = function (array) {
     var arrayCopy = array.slice();
