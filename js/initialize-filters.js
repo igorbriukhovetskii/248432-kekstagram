@@ -20,7 +20,7 @@ window.initializeFilters = (function () {
    * @param {Object} filtersBlock - блок контроля фильтров изображения
    */
   var getFilterOnClick = function (event, filtersBlock) {
-    if (event.target !== filtersBlock) {
+    if (event.target.value) {
       currentFilter = event.target.value;
     }
   };
