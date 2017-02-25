@@ -56,7 +56,11 @@
   var onFilterChange = function (filter) {
     imagePreview.className = imagePreviewClass;
     imagePreview.classList.add('filter-' + filter);
-    filter === 'none' ? window.slider.hide() : window.slider.show();
+    if (filter === 'none') {
+      window.slider.hide();
+    } else {
+      window.slider.show();
+    }
     document.addEventListener('mousemove', onSaturationChange);
     window.saturate();
   };
