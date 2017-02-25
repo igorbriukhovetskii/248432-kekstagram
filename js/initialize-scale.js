@@ -13,7 +13,7 @@ window.initializeScale = (function () {
    * @param {boolean} resizeFlag - если true, масштаб изменяется в сторону увеличения, иначе в сторону уменьшения
    * @param {number} scaleStep - шаг изменения масштаба
    */
-  var getNewControlValue = function (resizeFlag, scaleStep) {
+  var calculateNewScaleValue = function (resizeFlag, scaleStep) {
 
     switch (resizeFlag) {
       case true:
@@ -57,7 +57,7 @@ window.initializeScale = (function () {
   };
 
   //  Ссылка на обработчик управления масштабом изображения
-  var scaleHandler = null;
+  var onScaleControlElementClicked = null;
 
   return {
     /**
@@ -67,15 +67,15 @@ window.initializeScale = (function () {
      * @param {function} callback - функция применения текущего масштаба к соответствующему стилю CSS
      */
     activateScale: function (scaleControlElement, scaleStep, callback) {
-      scaleHandler = function (event) {
-        getNewControlValue(setScaleIncreaseOrDecrease(event), scaleStep);
+      onScaleControlElementClicked = function (event) {
+        calculateNewScaleValue(setScaleIncreaseOrDecrease(event), scaleStep);
         displayNewValue(currentScaleValue, scaleControlElement);
 
         if (typeof callback === 'function') {
           callback(currentScaleValue);
         }
       };
-      scaleControlElement.addEventListener('click', scaleHandler);
+      scaleControlElement.addEventListener('click', onScaleControlElementClicked);
     },
 
     /**
@@ -83,7 +83,7 @@ window.initializeScale = (function () {
      * @param {Object} scaleControlElement - элемент страницы (контрол изменения масштаба)
      */
     deactivateScale: function (scaleControlElement) {
-      scaleControlElement.removeEventListener('click', scaleHandler);
+      scaleControlElement.removeEventListener('click', onScaleControlElementClicked);
     },
 
     /**

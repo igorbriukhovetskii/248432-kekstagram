@@ -17,17 +17,16 @@ window.initializeFilters = (function () {
   /**
    * Функция получения значения фильтра по клику мышью на элемент управления
    * @param {Object} event - событие мыши
-   * @param {Object} filtersBlock - блок контроля фильтров изображения
    */
-  var getFilterOnClick = function (event, filtersBlock) {
+  var getFilterOnClick = function (event) {
     if (event.target.value) {
       currentFilter = event.target.value;
     }
   };
   //  Ссылка на обработчик клика мышью
-  var clickHandler = null;
+  var onFiltersBlockClick = null;
   //  Ссылка на обработчик нажатия клавиши
-  var keydownHandler = null;
+  var onFiltersBlockEnterKeydown = null;
 
   return {
     /**
@@ -35,35 +34,35 @@ window.initializeFilters = (function () {
      * @param {Object} filtersBlock - блок контроля фильтров изображения
      * @param {function} callback - функция применения текущего значения фильтра
      */
-    activateFilters: function (filtersBlock, callback) {
-      clickHandler = function (event) {
-        getFilterOnClick(event, filtersBlock);
+    activate: function (filtersBlock, callback) {
+      onFiltersBlockClick = function (event) {
+        getFilterOnClick(event);
 
         if (typeof callback === 'function') {
           callback(currentFilter);
         }
       };
-      filtersBlock.addEventListener('click', clickHandler);
+      filtersBlock.addEventListener('click', onFiltersBlockClick);
 
-      keydownHandler = function (event) {
+      onFiltersBlockEnterKeydown = function (event) {
         if (window.utils.isActivateEvent(event)) {
           getFilterOnKeydown(event);
-
           if (typeof callback === 'function') {
             callback(currentFilter);
           }
         }
       };
-      filtersBlock.addEventListener('keydown', keydownHandler);
+      filtersBlock.addEventListener('keydown', onFiltersBlockEnterKeydown);
+      window.slider.initialize();
     },
 
     /**
      * Метод деактивирует работу фильтров
      * @param {Object} filtersBlock - блок контроля фильтров изображения
      */
-    deactivateFilters: function (filtersBlock) {
-      filtersBlock.removeEventListener('click', clickHandler);
-      filtersBlock.removeEventListener('keydown', keydownHandler);
+    deactivate: function (filtersBlock) {
+      filtersBlock.removeEventListener('click', onFiltersBlockClick);
+      filtersBlock.removeEventListener('keydown', onFiltersBlockEnterKeydown);
     },
 
     /**
@@ -72,10 +71,11 @@ window.initializeFilters = (function () {
      * @param {string} defaultValue - значение фильтра по умолчанию
      * @param {function} callback - функция применения текущего значения фильтра
      */
-    resetFilters: function (filtersBlock, defaultValue, callback) {
+    reset: function (filtersBlock, defaultValue, callback) {
       var defaultFilterToggle = filtersBlock.querySelector('input[value=' + defaultValue);
       defaultFilterToggle.checked = true;
       currentFilter = defaultValue;
+
 
       if (typeof callback === 'function') {
         callback(defaultValue);

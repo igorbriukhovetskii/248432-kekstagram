@@ -99,7 +99,7 @@
    * отрисовывается соответствующая выборка изображений
    * @param {Object} event
    */
-  var selectFilterHandler = function (event) {
+  var onChangeFilter = function (event) {
     if (!event.target.value) {
       return;
     }
@@ -129,7 +129,7 @@
     pictures = event.target.response;
     showFilters();
     addPictures(pictures);
-    filtersBlock.addEventListener('click', selectFilterHandler);
+    filtersBlock.addEventListener('click', onChangeFilter);
   };
 
   window.load(DATA_URL, onLoad);
