@@ -23,6 +23,15 @@ window.utils = (function () {
      */
     isDeactivateEvent: function (event) {
       return event.keyCode && event.keyCode === ESCAPE_KEY_CODE;
+    },
+
+    /**
+     * Метод, возвращающий случайный индекс элемента массива
+     * @param {Array} array
+     * @return {number}
+     */
+    getRandomArrayIndex: function (array) {
+      return Math.floor(Math.random() * array.length);
     }
   };
 })();
