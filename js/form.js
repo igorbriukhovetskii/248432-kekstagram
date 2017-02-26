@@ -80,7 +80,7 @@
    * @param {string} className - класс для сокрытия блока
    * @param {boolean} overlayVisibility - статус видимости формы кадрирования после срабатывания функции
    */
-  function toggleUploadOverlay(className, overlayVisibility) {
+  var toggleUploadOverlay = function (className, overlayVisibility) {
     uploadForm.classList.toggle(className, overlayVisibility);
     uploadOverlay.classList.toggle(className, !overlayVisibility);
     if (overlayVisibility) {
@@ -109,14 +109,14 @@
       //  Подключение обработчика для показа формы кадрирования при загрузке изображения
       uploadFormInput.addEventListener('change', onUploadFormInputChange);
     }
-  }
+  };
 
   //  Функция, скрывающая форму кадрирования при нажатии клавиши ESCAPE
-  function onCloseByEscape(event) {
+  var onCloseByEscape = function (event) {
     if (window.utils.isDeactivateEvent(event)) {
       toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
     }
-  }
+  };
 
   //  Подключение обработчика событий для показа формы кадрирования при загрузке изображения
   uploadFormInput.addEventListener('change', onUploadFormInputChange);

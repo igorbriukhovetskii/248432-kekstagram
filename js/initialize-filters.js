@@ -45,11 +45,14 @@ window.initializeFilters = (function () {
       filtersBlock.addEventListener('click', onFiltersBlockClick);
 
       onFiltersBlockEnterKeydown = function (event) {
-        if (window.utils.isActivateEvent(event)) {
-          getFilterOnKeydown(event);
-          if (typeof callback === 'function') {
-            callback(currentFilter);
-          }
+        if (!window.utils.isActivateEvent(event)) {
+          return;
+        }
+
+        getFilterOnKeydown(event);
+
+        if (typeof callback === 'function') {
+          callback(currentFilter);
         }
       };
       filtersBlock.addEventListener('keydown', onFiltersBlockEnterKeydown);
@@ -75,7 +78,6 @@ window.initializeFilters = (function () {
       var defaultFilterToggle = filtersBlock.querySelector('input[value=' + defaultValue);
       defaultFilterToggle.checked = true;
       currentFilter = defaultValue;
-
 
       if (typeof callback === 'function') {
         callback(defaultValue);

@@ -14,7 +14,6 @@ window.initializeScale = (function () {
    * @param {number} scaleStep - шаг изменения масштаба
    */
   var calculateNewScaleValue = function (resizeFlag, scaleStep) {
-
     switch (resizeFlag) {
       case true:
         currentScaleValue = Math.min(currentScaleValue + scaleStep, MAX_IMAGE_SCALE);
@@ -23,7 +22,6 @@ window.initializeScale = (function () {
         currentScaleValue = Math.max(currentScaleValue - scaleStep, MIN_IMAGE_SCALE);
         break;
     }
-
   };
 
   /**

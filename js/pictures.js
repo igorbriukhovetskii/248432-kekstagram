@@ -50,38 +50,45 @@
     return sortedArray;
   };
 
+  /**
+   * Функция вызывает метод showGallery, который заполняет отрисованные карточки изображений
+   * данными, полученными с сервера и открывает оверлей с изображением в большом масштабе
+   * @param {Object} event
+   * @param {Object} picture
+   */
+  var openGallery = function (event, picture) {
+    event.preventDefault();
+    window.showGallery(picture);
+  };
+
+  /**
+   * Функция открывает оверлей по нажатию ENTER
+   * @param {Object} event
+   * @param {Object} picture
+   */
+  var openGalleryByEnter = function (event, picture) {
+    if (window.utils.isActivateEvent(event)) {
+      openGallery(event, picture);
+    }
+  };
+
   //  Функция добавляет в разметку полученные с сервера карточки изображений
   var addPictures = function (array) {
     var fragment = document.createDocumentFragment();
 
     array.forEach(function (picture) {
-      /**
-       * Функция вызывает метод showGallery, который заполняет отрисованные карточки изображений
-       * данными, полученными с сервера и открывает оверлей с изображением в большом масштабе
-       * @param {Object} event
-       */
-      var openGallery = function (event) {
-        event.preventDefault();
-        window.showGallery(picture);
-      };
-
-      /**
-       * Функция открывает оверлей по нажатию ENTER
-       * @param {Object} event
-       */
-      var openGalleryByEnter = function (event) {
-        if (window.utils.isActivateEvent(event)) {
-          openGallery(event);
-        }
-      };
-
       var newContent = pictureTemplate.cloneNode(true);
 
       newContent.querySelector('img').src = picture.url;
       newContent.querySelector('.picture-likes').textContent = picture.likes;
       newContent.querySelector('.picture-comments').textContent = picture.comments.length;
-      newContent.addEventListener('click', openGallery);
-      newContent.addEventListener('keydown', openGalleryByEnter);
+
+      newContent.addEventListener('click', function (event) {
+        openGallery(event, picture);
+      });
+      newContent.addEventListener('keydown', function (event) {
+        openGalleryByEnter(event, picture);
+      });
 
       fragment.appendChild(newContent);
     });
