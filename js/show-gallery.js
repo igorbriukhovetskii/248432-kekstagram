@@ -11,9 +11,9 @@ window.showGallery = (function () {
    * Функция открывает оверлей галлерей по нажатию клавиши ENTER
    * @param {Object} event - клавиатурное событие
    */
-  var closeGalleryOnEnter = function (event) {
+  var onGalleryCloseByEnterKey = function (event) {
     if (window.utils.isActivateEvent(event)) {
-      closeGallery(event);
+      onGalleryClose();
     }
   };
 
@@ -21,18 +21,18 @@ window.showGallery = (function () {
    * Функция закрывает галлерею по нажатию клавиши ESCAPE
    * @param {Object} event - клавиатурное событие
    */
-  var closeGalleryOnEscapeButton = function (event) {
+  var onGalleryCloseByEscapeKey = function (event) {
     if (window.utils.isDeactivateEvent(event)) {
-      closeGallery(event);
+      onGalleryClose();
     }
   };
 
   //  Функция скрывает оверлей галлереи и удаляет обработчики событий
-  var closeGallery = function () {
+  var onGalleryClose = function () {
     galleryOverlay.classList.toggle('invisible', true);
-    document.removeEventListener('keydown', closeGalleryOnEscapeButton);
-    closeButton.removeEventListener('click', closeGallery);
-    closeButton.removeEventListener('keydown', closeGalleryOnEnter);
+    document.removeEventListener('keydown', onGalleryCloseByEscapeKey);
+    closeButton.removeEventListener('click', onGalleryClose);
+    closeButton.removeEventListener('keydown', onGalleryCloseByEnterKey);
   };
 
   /**
@@ -41,9 +41,9 @@ window.showGallery = (function () {
    * @param {Object[]} data - данные, получаемые с сервера
    */
   return function (data) {
-    document.addEventListener('keydown', closeGalleryOnEscapeButton);
-    closeButton.addEventListener('click', closeGallery);
-    closeButton.addEventListener('keydown', closeGalleryOnEnter);
+    document.addEventListener('keydown', onGalleryCloseByEscapeKey);
+    closeButton.addEventListener('click', onGalleryClose);
+    closeButton.addEventListener('keydown', onGalleryCloseByEnterKey);
     galleryOverlay.classList.toggle('invisible', false);
     image.src = data.url;
     like.textContent = data.likes;

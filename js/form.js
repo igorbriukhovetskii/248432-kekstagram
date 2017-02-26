@@ -8,7 +8,7 @@
   //  Блок с формой кадрирования изображения
   var uploadOverlay = document.querySelector('.upload-overlay');
   //  Кнопка закрытия блока с формой кадрирования изображения
-  var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
+  var uploadCancelButton = uploadOverlay.querySelector('#upload-cancel');
   //  Блок фильтров изображения
   var filterControls = uploadOverlay.querySelector('.upload-filter-controls');
   //  Значение фильтра по умолчанию
@@ -32,15 +32,20 @@
   var VISIBILITY_FLAG = true;
 
   //  Функция закрытия формы кадрирования изображения
-  var cancelHandler = function () {
+  var onUploadCancelButtonClick = function () {
     toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
+  };
+
+  // Обработчик изменения насыщенности CSS-фильтра
+  var onSaturationChange = function () {
+    window.saturate();
   };
 
   /**
    * Call-back функция изменения масштаба изображения
    * @param {number} scale - текущее значение, вычесленное модулем initialize-scale;
    */
-  var resizeImage = function (scale) {
+  var onScaleChange = function (scale) {
     imagePreview.style.transform = 'scale(' + (scale / 100) + ')';
   };
 
@@ -48,19 +53,26 @@
    * Call-back функция изменения CSS-фильтра, применённого к изображению
    * @param {string} filter - текущее значение фильтра, полученное модулем initialize-filters
    */
-  var applyFilter = function (filter) {
+  var onFilterChange = function (filter) {
     imagePreview.className = imagePreviewClass;
     imagePreview.classList.add('filter-' + filter);
+    if (filter === 'none') {
+      window.slider.hide();
+    } else {
+      window.slider.show();
+    }
+    document.addEventListener('mousemove', onSaturationChange);
+    window.saturate();
   };
 
   //  Функция показа формы кадрирования после загрузки изображения
-  var uploadHandler = function () {
+  var onUploadFormInputChange = function () {
     //  Показ формы кадрирования изображения
     toggleUploadOverlay(hiddenElementClass, VISIBILITY_FLAG);
     //  Установка масштабу изображения значения по умолчанию
-    window.initializeScale.resetScale(DEFAULT_IMAGE_SCALE, scaleControl, resizeImage);
+    window.initializeScale.resetScale(DEFAULT_IMAGE_SCALE, scaleControl, onScaleChange);
     //  Установка фильтру изображения значения по умолчанию
-    window.initializeFilters.resetFilters(filterControls, defaultFilterValue, applyFilter);
+    window.initializeFilters.reset(filterControls, defaultFilterValue, onFilterChange);
   };
 
   /**
@@ -72,37 +84,40 @@
     uploadForm.classList.toggle(className, overlayVisibility);
     uploadOverlay.classList.toggle(className, !overlayVisibility);
     if (overlayVisibility) {
-      uploadCancel.setAttribute('aria-pressed', 'false');
-      uploadCancel.addEventListener('click', cancelHandler);
+      uploadCancelButton.setAttribute('aria-pressed', 'false');
+      uploadCancelButton.addEventListener('click', onUploadCancelButtonClick);
       //  Подключение обработчика для закрытия формы кадрирования при нажатии ESCAPE
-      document.addEventListener('keydown', closeUploadOverlayOnEscape);
+      document.addEventListener('keydown', onCloseByEscape);
       //  Активация фильтров
-      window.initializeFilters.activateFilters(filterControls, applyFilter);
+      window.initializeFilters.activate(filterControls, onFilterChange);
+      window.saturate();
       //  Активация изменения масштаба изображения
-      window.initializeScale.activateScale(scaleControl, SCALE_STEP, resizeImage);
+      window.initializeScale.activateScale(scaleControl, SCALE_STEP, onScaleChange);
       //  Удаление обработчика для показа формы кадрирования при загрузке изображения
-      uploadFormInput.removeEventListener('change', uploadHandler);
+      uploadFormInput.removeEventListener('change', onUploadFormInputChange);
     } else {
-      uploadCancel.setAttribute('aria-pressed', 'true');
-      uploadCancel.removeEventListener('click', cancelHandler);
+      uploadCancelButton.setAttribute('aria-pressed', 'true');
+      uploadCancelButton.removeEventListener('click', onUploadCancelButtonClick);
       //  Удаление обработчика для закрытия формы кадрирования при нажатии ESCAPE
-      document.removeEventListener('keydown', closeUploadOverlayOnEscape);
+      document.removeEventListener('keydown', onCloseByEscape);
       //  Деактивация фильтров
-      window.initializeFilters.deactivateFilters(filterControls);
+      window.initializeFilters.deactivate(filterControls);
+      //  Удаление обработчика изменения насыщенности CSS-фильтров
+      document.removeEventListener('mousemove', onSaturationChange);
       //  Деактивация управления масштабом
       window.initializeScale.deactivateScale(scaleControl);
       //  Подключение обработчика для показа формы кадрирования при загрузке изображения
-      uploadFormInput.addEventListener('change', uploadHandler);
+      uploadFormInput.addEventListener('change', onUploadFormInputChange);
     }
   }
 
   //  Функция, скрывающая форму кадрирования при нажатии клавиши ESCAPE
-  function closeUploadOverlayOnEscape(event) {
+  function onCloseByEscape(event) {
     if (window.utils.isDeactivateEvent(event)) {
       toggleUploadOverlay(hiddenElementClass, !VISIBILITY_FLAG);
     }
   }
 
   //  Подключение обработчика событий для показа формы кадрирования при загрузке изображения
-  uploadFormInput.addEventListener('change', uploadHandler);
+  uploadFormInput.addEventListener('change', onUploadFormInputChange);
 })();
